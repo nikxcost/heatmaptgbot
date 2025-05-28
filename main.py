@@ -1,7 +1,8 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
+from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
 from typing import List
-from datetime import datetime, timedelta
+from datetime import datetime
 import calendar
 
 app = FastAPI()
@@ -49,10 +50,10 @@ def build_calendar(dates: List[str]) -> str:
     return result.strip()
 
 
-@app.post("/generate-calendar/")
+@app.post("/generate-calendar/", response_class=PlainTextResponse)
 async def generate_calendar(date_list: DateList):
     try:
         calendar_text = build_calendar(date_list.dates)
-        return {"calendar": calendar_text}
+        return calendar_text  # Возвращаем как обычный текст
     except Exception as e:
-        return {"error": str(e)}
+        return f"Ошибка: {e}"
